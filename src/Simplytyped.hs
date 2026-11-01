@@ -65,6 +65,7 @@ sub _ _ (Bound j) | otherwise = Bound j
 sub _ _ (Free n   )           = Free n
 sub i t (u   :@: v)           = sub i t u :@: sub i t v
 sub i t (Lam t'  u)           = Lam t' (sub (i + 1) t u)
+sub i t (Let u v) = Let (sub i t u) (sub (i + 1) t v)
 
 -- convierte un valor en el término equivalente
 quote :: Value -> Term
@@ -95,7 +96,15 @@ eval env (t :@: u) =
       in eval env (sub 0 (quote v) body)    -- E-APPABS + seguir reduciendo
     _ -> error "eval: se intentó aplicar algo que no es una función"
 
+eval env (Let t1 t2) =
+  let v = eval env t1
+  in eval env (sub 0 (quote v) t2)
 
+eval _   Zero        = error "eval: Zero no implementado (ejercicio 4)"
+eval _   (Suc _)     = error "eval: Suc no implementado (ejercicio 4)"
+eval _   (Rec _ _ _) = error "eval: Rec no implementado (ejercicio 4)"
+eval _   Nil         = error "eval: Nil no implementado (ejercicio 6)"
+eval _   (Cons _ _)  = error "eval: Cons no implementado (ejercicio 6)"
 
 ----------------------
 --- type checker
