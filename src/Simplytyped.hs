@@ -22,7 +22,37 @@ import           Common
 
 -- conversion a términos localmente sin nombres
 conversion :: LamTerm -> Term
-conversion = undefined
+conversion = aux []
+  where
+    aux :: [String] -> LamTerm -> Term
+    aux env (LVar x) =
+      case elemIndex x env of
+        Just i  -> Bound i
+        Nothing -> Free (Global x)
+
+    aux env (LAbs x t body) =
+      Lam t (aux (x : env) body)
+
+    aux env (LApp t1 t2) =
+      aux env t1 :@: aux env t2
+
+    aux env (LLet x t1 t2) =
+      Let (aux env t1) (aux (x : env) t2)
+
+    aux _ LZero =
+      Zero
+
+    aux env (LSuc t) =
+      Suc (aux env t)
+
+    aux env (LRec t1 t2 t3) =
+      Rec (aux env t1) (aux env t2) (aux env t3)
+
+    aux _ LNil =
+      Nil
+
+    aux env (LCons t1 t2) =
+      Cons (aux env t1) (aux env t2)
 
 ----------------------------
 --- evaluador de términos
