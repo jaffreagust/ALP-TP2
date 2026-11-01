@@ -72,8 +72,28 @@ quote (VLam t f) = Lam t f
 
 -- evalúa un término en un entorno dado
 eval :: NameEnv Value Type -> Term -> Value
-eval = undefined
 
+-- Variable libre: se busca en el entorno global
+eval env (Free n) =
+  case lookup n env of
+    Just (v, _) -> v
+    Nothing     -> error ("Variable libre no definida: " ++ show n)
+
+-- Bound a nivel superior: no debería ocurrir (se maneja por sustitución)
+eval _   (Bound _) =
+  error "eval: Bound inesperado (¿sub con índice equivocado?)"
+
+-- Las abstracciones ya son valores: no se evalúa el cuerpo
+eval _   (Lam t body) =
+  VLam t body
+
+-- Aplicación: E-APP1, E-APP2, E-APPABS
+eval env (t :@: u) =
+  case eval env t of
+    VLam _ body ->
+      let v = eval env u                    -- E-APP2: argumento primero a valor
+      in eval env (sub 0 (quote v) body)    -- E-APPABS + seguir reduciendo
+    _ -> error "eval: se intentó aplicar algo que no es una función"
 
 
 
