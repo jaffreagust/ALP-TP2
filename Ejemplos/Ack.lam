@@ -1,0 +1,15 @@
+-- Ack : Nat -> Nat -> Nat
+-- Ack 0 n     = suc n
+-- Ack (suc m) n = iter (Ack m) (suc n) 1
+--
+-- La iteración se codifica con R sobre Nat:
+--   iter f k x = R x (\r i -> f r) k
+
+def Ack =
+  \m:Nat.
+  \n:Nat.
+    (R (\n:Nat. suc n)
+       (\f:(Nat -> Nat). \k:Nat. \n:Nat.
+          R (suc 0) (\r:Nat. \i:Nat. f r) (suc n))
+       m)
+    n

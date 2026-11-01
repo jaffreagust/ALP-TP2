@@ -66,10 +66,15 @@ sub _ _ (Free n   )           = Free n
 sub i t (u   :@: v)           = sub i t u :@: sub i t v
 sub i t (Lam t'  u)           = Lam t' (sub (i + 1) t u)
 sub i t (Let u v) = Let (sub i t u) (sub (i + 1) t v)
+sub _ _ Zero        = Zero
+sub i t (Suc u)     = Suc (sub i t u)
+sub i t (Rec u v w) = Rec (sub i t u) (sub i t v) (sub i t w) 
 
 -- convierte un valor en el término equivalente
 quote :: Value -> Term
-quote (VLam t f) = Lam t f
+quote (VLam t f)        = Lam t f
+quote (VNum NZero)      = Zero
+quote (VNum (NSuc nv))  = Suc (quote (VNum nv))
 
 -- evalúa un término en un entorno dado
 eval :: NameEnv Value Type -> Term -> Value
@@ -84,25 +89,35 @@ eval env (Free n) =
 eval _   (Bound _) =
   error "eval: Bound inesperado (¿sub con índice equivocado?)"
 
--- Las abstracciones ya son valores: no se evalúa el cuerpo
 eval _   (Lam t body) =
   VLam t body
 
--- Aplicación: E-APP1, E-APP2, E-APPABS
 eval env (t :@: u) =
   case eval env t of
     VLam _ body ->
-      let v = eval env u                    -- E-APP2: argumento primero a valor
-      in eval env (sub 0 (quote v) body)    -- E-APPABS + seguir reduciendo
+      let v = eval env u                   
+      in eval env (sub 0 (quote v) body)    
     _ -> error "eval: se intentó aplicar algo que no es una función"
 
 eval env (Let t1 t2) =
   let v = eval env t1
   in eval env (sub 0 (quote v) t2)
 
-eval _   Zero        = error "eval: Zero no implementado (ejercicio 4)"
-eval _   (Suc _)     = error "eval: Suc no implementado (ejercicio 4)"
-eval _   (Rec _ _ _) = error "eval: Rec no implementado (ejercicio 4)"
+eval _ Zero = VNum NZero
+
+eval env (Suc t) =
+  case eval env t of
+    VNum nv -> VNum (NSuc nv)
+    _       -> error "eval: suc esperaba un natural"
+
+eval env (Rec t1 t2 t3) =
+  case eval env t3 of
+    VNum NZero -> eval env t1
+    VNum (NSuc nv) ->
+      let nTerm   = quote (VNum nv)
+          recTerm = Rec t1 t2 nTerm
+      in eval env (t2 :@: recTerm :@: nTerm)
+    _ -> error "eval: R esperaba un natural en el tercer argumento"
 eval _   Nil         = error "eval: Nil no implementado (ejercicio 6)"
 eval _   (Cons _ _)  = error "eval: Cons no implementado (ejercicio 6)"
 
@@ -152,5 +167,25 @@ infer' c e (t :@: u) = infer' c e t >>= \tt -> infer' c e u >>= \tu ->
     FunT t1 t2 -> if (tu == t1) then ret t2 else matchError t1 tu
     _          -> notfunError tt
 infer' c e (Lam t u) = infer' (t : c) e u >>= \tu -> ret $ FunT t tu
+
+infer' _ _ Zero = ret NatT
+
+infer' c e (Suc t) =
+  infer' c e t >>= \tt ->
+    case tt of
+      NatT -> ret NatT
+      _    -> matchError NatT tt
+
+infer' c e (Rec t1 t2 t3) =
+  infer' c e t1 >>= \tt1 ->
+  infer' c e t2 >>= \tt2 ->
+  infer' c e t3 >>= \tt3 ->
+    case tt3 of
+      NatT ->
+        case tt2 of
+          FunT a (FunT b r)
+            | a == tt1 && b == NatT && r == tt1 -> ret tt1
+          _ -> matchError (FunT tt1 (FunT NatT tt1)) tt2
+      _ -> matchError NatT tt3
 
 
