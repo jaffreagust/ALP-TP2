@@ -31,6 +31,10 @@ import Data.Char
     SUC     { TSucc }
     REC     { TR }
     NAT     { TNat }
+    LIST    { TList }
+    NIL     { TNil }
+    CONS    { TCons }
+    RLL     { TRL }    -- token para RL, para no chocar con el constructor RL
     
 
 %left '=' 
@@ -49,13 +53,21 @@ Exp     :: { LamTerm }
         | RExp                         { $1 }
 
 RExp    :: { LamTerm }
-        : REC SucExp SucExp SucExp     { LRec $2 $3 $4 }
+        : REC RLExp RLExp RLExp        { LRec $2 $3 $4 }
+        | RLExp                        { $1 }
+
+RLExp   :: { LamTerm }
+        : RLL ConsExp ConsExp ConsExp  { LRL $2 $3 $4 }
+        | ConsExp                      { $1 }
+
+ConsExp :: { LamTerm }
+        : CONS SucExp ConsExp          { LCons $2 $3 }
         | SucExp                       { $1 }
 
 SucExp  :: { LamTerm }
         : SUC SucExp                   { LSuc $2 }
         | NAbs                         { $1 }
-        
+
 NAbs    :: { LamTerm }
         : NAbs Atom                    { LApp $1 $2 }
         | Atom                         { $1 }
@@ -63,10 +75,12 @@ NAbs    :: { LamTerm }
 Atom    :: { LamTerm }
         : VAR                          { LVar $1 }
         | ZERO                         { LZero }
+        | NIL                          { LNil }
         | '(' Exp ')'                  { $2 }
 
 Type    : TYPEE                        { EmptyT }
         | NAT                          { NatT }
+        | LIST NAT                     { ListT }
         | Type '->' Type               { FunT $1 $3 }
         | '(' Type ')'                 { $2 }
 
@@ -119,6 +133,10 @@ data Token = TVar String
                | TSucc
                | TR
                | TNat
+               | TList
+               | TNil
+               | TCons
+               | TRL
                deriving Show
 
 ----------------------------------
@@ -150,6 +168,10 @@ lexer cont s = case s of
                               ("Nat",rest)  -> cont TNat rest
                               ("suc",rest)  -> cont TSucc rest
                               ("R",rest)    -> cont TR rest
+                              ("List",rest) -> cont TList rest
+                              ("nil",rest)  -> cont TNil rest
+                              ("cons",rest) -> cont TCons rest
+                              ("RL",rest)   -> cont TRL rest
                               (var,rest)    -> cont (TVar var) rest
                           consumirBK anidado cl cont s = case s of
                               ('-':('-':cs)) -> consumirBK anidado cl cont $ dropWhile ((/=) '\n') cs

@@ -26,9 +26,12 @@ pp :: Int -> [String] -> Term -> Doc
 pp ii vs (Bound k         ) = text (vs !! (ii - k - 1))
 pp _  _  (Free  (Global s)) = text s
 
-pp ii vs (i :@: c         ) = sep
-  [ parensIf (isLam i || isLet i || isSuc i || isRec i) (pp ii vs i)
-  , nest 1 (parensIf (isLam c || isApp c || isLet c || isSuc c || isRec c) (pp ii vs c))
+pp ii vs (i :@: c) = sep
+  [ parensIf (isLam i || isLet i || isSuc i || isCons i || isRL i || isRec i)
+             (pp ii vs i)
+  , nest 1 (parensIf (isLam c || isApp c || isLet c || isSuc c
+                      || isCons c || isRL c || isRec c)
+             (pp ii vs c))
   ]
 
 pp ii vs (Lam t c) =
@@ -51,7 +54,8 @@ pp _  _  Zero = text "0"
 
 pp ii vs (Suc t) =
   text "suc "
-    <> parensIf (isLam t || isLet t || isRec t) (pp ii vs t)
+    <> parensIf (isLam t || isLet t || isCons t || isRL t || isRec t)
+                (pp ii vs t)
 
 pp ii vs (Rec t1 t2 t3) =
   sep
@@ -59,6 +63,28 @@ pp ii vs (Rec t1 t2 t3) =
     , parensIf (isLam t1 || isLet t1 || isRec t1) (pp ii vs t1)
     , parensIf (isLam t2 || isLet t2 || isRec t2) (pp ii vs t2)
     , parensIf (isLam t3 || isLet t3 || isRec t3) (pp ii vs t3)
+    ]
+
+pp _  _  Nil = text "nil"
+
+pp ii vs (Cons t1 t2) =
+  sep
+    [ text "cons"
+    , nest 1 (parensIf (isLam t1 || isLet t1 || isCons t1 || isRL t1 || isRec t1)
+                (pp ii vs t1))
+    , nest 1 (parensIf (isLam t2 || isLet t2 || isRL t2 || isRec t2)
+                (pp ii vs t2))
+    ]
+
+pp ii vs (RL t1 t2 t3) =
+  sep
+    [ text "RL"
+    , nest 1 (parensIf (isLam t1 || isLet t1 || isRL t1 || isRec t1)
+                (pp ii vs t1))
+    , nest 1 (parensIf (isLam t2 || isLet t2 || isRL t2 || isRec t2)
+                (pp ii vs t2))
+    , nest 1 (parensIf (isLam t3 || isLet t3 || isRL t3 || isRec t3)
+                (pp ii vs t3))
     ]
 
 
@@ -82,10 +108,19 @@ isRec :: Term -> Bool
 isRec (Rec _ _ _) = True
 isRec _           = False
 
+isCons :: Term -> Bool
+isCons (Cons _ _) = True
+isCons _          = False
+
+isRL :: Term -> Bool
+isRL (RL _ _ _) = True
+isRL _          = False
+
 -- pretty-printer de tipos
 printType :: Type -> Doc
 printType EmptyT = text "E"
 printType NatT = text "Nat"
+printType ListT = text "List Nat"
 printType (FunT t1 t2) =
   sep [parensIf (isFun t1) (printType t1), text "->", printType t2]
 
@@ -103,6 +138,9 @@ fv (Let t u) = fv t ++ fv u
 fv Zero              = []
 fv (Suc t)           = fv t
 fv (Rec t1 t2 t3)    = fv t1 ++ fv t2 ++ fv t3
+fv Nil            = []
+fv (Cons t1 t2)   = fv t1 ++ fv t2
+fv (RL t1 t2 t3)  = fv t1 ++ fv t2 ++ fv t3
 
 ---
 printTerm :: Term -> Doc

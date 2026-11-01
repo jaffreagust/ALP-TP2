@@ -1,0 +1,26 @@
+-- isZero n = 1 si n = 0, 0 si n = suc k
+def isZero =
+  \n:Nat. R (suc 0) (\k:Nat. \z:Nat. 0) n
+
+-- eq m n = 1 si m = n, 0 si no
+def eq =
+  \m:Nat.
+    R isZero
+      (\mm:Nat. \f:(Nat -> Nat). \n:Nat.
+         R 0 (\k:Nat. \z:Nat. f k) n)
+      m
+
+-- member x xs = 1 si x pertenece a xs, 0 si no
+def member =
+  \x:Nat.
+    RL 0
+      (\y:Nat. \acc:Nat.
+         R acc (\k:Nat. \z:Nat. suc 0) (eq x y))
+
+-- elimDups xs conserva la primera ocurrencia de cada elemento
+def elimDups =
+  RL nil
+    (\n:Nat. \rec:List Nat.
+       R (cons n rec)
+         (\k:Nat. \z:List Nat. rec)
+         (member n rec))
