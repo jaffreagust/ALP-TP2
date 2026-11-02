@@ -1,7 +1,7 @@
 C:\Users\jaffr\AppData\Local\Programs\stack\x86_64-windows\ghc-8.8.3\lib\include\ghcversion.h:
   hash: 40d1b759f485f1cd5a54141a6412691ac2b76930507289a16a6a7b89b045b4d2
 C:\Users\jaffr\Documents\LCC\ALP\TP2\.stack-work\dist\ac0f60d4\build\Parse.hs:
-  hash: bbacf9187352404c370ce227df13caf45111fe7c21c29f83e458752b33abf62d
+  hash: f3792a300cbdc5258f3c102240d0dcf097b15a408dc14c1cce1324d80d10bddf
 C:\Users\jaffr\Documents\LCC\ALP\TP2\.stack-work\dist\ac0f60d4\build\autogen\Paths_TP2.hs:
   hash: 801e3f018b19ac2feed57b2fe91f7a05eaf88c9d600369cfb11f9134790596b8
 C:\Users\jaffr\Documents\LCC\ALP\TP2\.stack-work\dist\ac0f60d4\build\autogen\cabal_macros.h:
@@ -15,10 +15,10 @@ C:\Users\jaffr\Documents\LCC\ALP\TP2\TP2.cabal:
 C:\Users\jaffr\Documents\LCC\ALP\TP2\package.yaml:
   hash: 3f5d9d8a2a57469ed5359f4daf48ab7a74a6eb0299ce2def67ad968547b7ac61
 C:\Users\jaffr\Documents\LCC\ALP\TP2\src\Common.hs:
-  hash: c18f467a1f4eb4701a3dc29bdbac50ad025d8d4ec7487cc872b67920340fde4e
+  hash: a894e802ed432e3c84511f880bb4c365aaefc288957c6eb884e56559dbe23117
 C:\Users\jaffr\Documents\LCC\ALP\TP2\src\Parse.y:
-  hash: fdc84850c1157735ac40989d1fda0cde1c20240de866c5120d955c2dae4857b8
+  hash: 6c873e6f3da9133a04875cf4c37cbbdc6d229e67a382b92a71af6d5144fd1bff
 C:\Users\jaffr\Documents\LCC\ALP\TP2\src\PrettyPrinter.hs:
-  hash: 9491d18994f6082af5a86ab058c5e53608c73fe53f26de26d096f276c4f8e039
+  hash: 50f56e2f35a0814ed90acfe68049e860fdb2965c6aee553851a84e296ac4c9c7
 C:\Users\jaffr\Documents\LCC\ALP\TP2\src\Simplytyped.hs:
-  hash: d5c7b2f44792fb271e8c45e8fea28ebe8b4197e2b0eb9f66b370ca714f83b9dd
+  hash: 2f1bc2c70c015a1dcaa40ecd3330f5f290d513b2cda84f0696aa32eba2dcac6f

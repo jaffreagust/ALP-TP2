@@ -40,6 +40,7 @@ import Data.Char
 %left '=' 
 %right '->'
 %right '\\' '.' LET IN
+%left VAR ZERO NIL '('  
 
 %%
 
@@ -53,15 +54,15 @@ Exp     :: { LamTerm }
         | RExp                         { $1 }
 
 RExp    :: { LamTerm }
-        : REC RLExp RLExp RLExp        { LRec $2 $3 $4 }
+        : REC Atom Atom Atom           { LRec $2 $3 $4 }
         | RLExp                        { $1 }
 
 RLExp   :: { LamTerm }
-        : RLL ConsExp ConsExp ConsExp  { LRL $2 $3 $4 }
+        : RLL Atom Atom Atom           { LRL $2 $3 $4 }
         | ConsExp                      { $1 }
 
 ConsExp :: { LamTerm }
-        : CONS SucExp ConsExp          { LCons $2 $3 }
+        : CONS Atom Atom               { LCons $2 $3 }
         | SucExp                       { $1 }
 
 SucExp  :: { LamTerm }

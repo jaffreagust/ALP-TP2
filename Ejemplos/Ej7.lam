@@ -12,15 +12,18 @@ def eq =
 
 -- member x xs = 1 si x pertenece a xs, 0 si no
 def member =
-  \x:Nat.
+  \x:Nat. \xs:List Nat.
     RL 0
       (\y:Nat. \acc:Nat.
          R acc (\k:Nat. \z:Nat. suc 0) (eq x y))
+      xs
 
 -- elimDups xs conserva la primera ocurrencia de cada elemento
 def elimDups =
-  RL nil
-    (\n:Nat. \rec:List Nat.
-       R (cons n rec)
-         (\k:Nat. \z:List Nat. rec)
-         (member n rec))
+  \xs:List Nat.
+    RL nil
+      (\n:Nat. \rec:List Nat.
+         R (cons n rec)
+           (\k:Nat. \z:List Nat. rec)
+           (member n rec))
+      xs

@@ -50,9 +50,9 @@ conversion = aux []
 
     aux _   LNil            = Nil
 
-    aux env (LCons t1 t2)   = Cons (go env t1) (go env t2)
+    aux env (LCons t1 t2)   = Cons (aux env t1) (aux env t2)
     
-    aux env (LRL t1 t2 t3)  = RL (go env t1) (go env t2) (go env t3)
+    aux env (LRL t1 t2 t3)  = RL (aux env t1) (aux env t2) (aux env t3)
 
 ----------------------------
 --- evaluador de términos
