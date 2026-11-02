@@ -60,31 +60,25 @@ pp ii vs (Suc t) =
 pp ii vs (Rec t1 t2 t3) =
   sep
     [ text "R"
-    , parensIf (isLam t1 || isLet t1 || isRec t1) (pp ii vs t1)
-    , parensIf (isLam t2 || isLet t2 || isRec t2) (pp ii vs t2)
-    , parensIf (isLam t3 || isLet t3 || isRec t3) (pp ii vs t3)
+    , parensIf (not (isAtom t1)) (pp ii vs t1)
+    , parensIf (not (isAtom t2)) (pp ii vs t2)
+    , parensIf (not (isAtom t3)) (pp ii vs t3)
     ]
-
 pp _  _  Nil = text "nil"
 
 pp ii vs (Cons t1 t2) =
   sep
     [ text "cons"
-    , nest 1 (parensIf (isLam t1 || isLet t1 || isCons t1 || isRL t1 || isRec t1)
-                (pp ii vs t1))
-    , nest 1 (parensIf (isLam t2 || isLet t2 || isRL t2 || isRec t2)
-                (pp ii vs t2))
+    , nest 1 (parensIf (not (isAtom t1)) (pp ii vs t1))
+    , nest 1 (parensIf (not (isAtom t2)) (pp ii vs t2))
     ]
 
 pp ii vs (RL t1 t2 t3) =
   sep
     [ text "RL"
-    , nest 1 (parensIf (isLam t1 || isLet t1 || isRL t1 || isRec t1)
-                (pp ii vs t1))
-    , nest 1 (parensIf (isLam t2 || isLet t2 || isRL t2 || isRec t2)
-                (pp ii vs t2))
-    , nest 1 (parensIf (isLam t3 || isLet t3 || isRL t3 || isRec t3)
-                (pp ii vs t3))
+    , nest 1 (parensIf (not (isAtom t1)) (pp ii vs t1))
+    , nest 1 (parensIf (not (isAtom t2)) (pp ii vs t2))
+    , nest 1 (parensIf (not (isAtom t3)) (pp ii vs t3))
     ]
 
 
@@ -115,6 +109,13 @@ isCons _          = False
 isRL :: Term -> Bool
 isRL (RL _ _ _) = True
 isRL _          = False
+
+isAtom :: Term -> Bool
+isAtom (Bound _) = True
+isAtom (Free _)  = True
+isAtom Zero      = True
+isAtom Nil       = True
+isAtom _         = False
 
 -- pretty-printer de tipos
 printType :: Type -> Doc

@@ -62,3 +62,5 @@ stack exec TP2-exe
 ```
 
 Esto lanzará el evaluador interactivo de lambda cálculo simplemente tipado a implementar en este trabajo. Con el comando `:?` pueden leer sobre el resto de los comandos disponibles.
+
+elimDups (cons (suc 0) (cons (suc 0) (cons (suc (suc 0)) (cons (suc (suc (suc 0)) (cons (suc (suc (suc 0))) (cons (suc 0) (cons (suc (suc 0)) nil)))))))
