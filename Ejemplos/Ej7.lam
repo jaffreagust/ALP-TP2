@@ -15,16 +15,17 @@ def member =
          R acc (\k:Nat. \z:Nat. suc 0) (eq x y))
       xs
 
-def append = \xs:List Nat. \n:Nat.
-  RL (cons n nil) (\x:Nat. \rec:List Nat. cons x rec) xs
-
 def rev = \xs:List Nat.
-  RL nil (\x:Nat. \rec:List Nat. append rec x) xs
+  (RL (\acc:List Nat. acc)
+      (\x:Nat. \g:List Nat -> List Nat. \acc:List Nat. g (cons x acc))
+      xs)
+  nil
 
 def elimDups = \xs:List Nat.
-  rev (RL nil
-        (\n:Nat. \rec:List Nat.
-           R (cons n rec)
-             (\r:List Nat. \k:Nat. rec)
-             (member n rec))
-        (rev xs))
+  rev ((RL (\acc:List Nat. acc)
+          (\n:Nat. \g:List Nat -> List Nat. \acc:List Nat.
+             g (R (cons n acc)
+                  (\r:List Nat. \k:Nat. acc)
+                  (member n acc)))
+          xs)
+       nil)

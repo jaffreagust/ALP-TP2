@@ -54,7 +54,7 @@ pp _  _  Zero = text "0"
 
 pp ii vs (Suc t) =
   text "suc "
-    <> parensIf (isLam t || isLet t || isCons t || isRL t || isRec t)
+    <> parensIf (isLam t || isLet t || isSuc t|| isCons t || isRL t || isRec t)
                 (pp ii vs t)
 
 pp ii vs (Rec t1 t2 t3) =
